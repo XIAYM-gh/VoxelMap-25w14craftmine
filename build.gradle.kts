@@ -3,12 +3,12 @@ plugins {
     id("fabric-loom") version ("1.10-SNAPSHOT") apply (false)
 }
 
-val MINECRAFT_VERSION by extra { "1.21.5" }
-val NEOFORGE_VERSION by extra { "21.4.6-beta" }
+val MINECRAFT_VERSION by extra { "25w14craftmine" }
+//val NEOFORGE_VERSION by extra { "21.4.6-beta" }
 val FABRIC_LOADER_VERSION by extra { "0.16.10" }
-val FABRIC_API_VERSION by extra { "0.119.5+1.21.5" }
+val FABRIC_API_VERSION by extra { "0.119.8+25w14craftmine" }
 
-val MOD_VERSION by extra { "$MINECRAFT_VERSION-1.15.0" }
+val MOD_VERSION by extra { "$MINECRAFT_VERSION-1.15.0+xiami.1" }
 
 allprojects {
     apply(plugin = "java")
@@ -28,11 +28,11 @@ subprojects {
 
     java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
-    tasks.processResources {
-        filesMatching("META-INF/neoforge.mods.toml") {
-            expand(mapOf("version" to MOD_VERSION))
-        }
-    }
+//    tasks.processResources {
+//        filesMatching("META-INF/neoforge.mods.toml") {
+//            expand(mapOf("version" to MOD_VERSION))
+//        }
+//    }
 
     version = MOD_VERSION
     group = "com.mamiyaotaru"

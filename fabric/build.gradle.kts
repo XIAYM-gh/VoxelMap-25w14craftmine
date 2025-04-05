@@ -41,15 +41,6 @@ loom {
         defaultRefmapName.set("voxelmap.fabric.refmap.json")
         useLegacyMixinAp = false
     }
-
-    runs {
-        named("client") {
-            client()
-            configName = "Fabric Client"
-            ideConfigGenerated(true)
-            runDir("run")
-        }
-    }
 }
 
 tasks {
