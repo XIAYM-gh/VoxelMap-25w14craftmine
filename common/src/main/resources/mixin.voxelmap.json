@@ -18,5 +18,8 @@
     "MixinKeyboard",
     "MixinRenderPipelines",
     "MixinWorldRenderer"
+  ],
+  "mixins": [
+    "BiomeAccessor"
   ]
 }

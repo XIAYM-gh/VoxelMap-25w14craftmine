@@ -2,6 +2,7 @@ package com.mamiyaotaru.voxelmap;
 
 import com.google.common.collect.UnmodifiableIterator;
 import com.mamiyaotaru.voxelmap.interfaces.AbstractMapData;
+import com.mamiyaotaru.voxelmap.mixins.BiomeAccessor;
 import com.mamiyaotaru.voxelmap.util.BlockModel;
 import com.mamiyaotaru.voxelmap.util.BlockRepository;
 import com.mamiyaotaru.voxelmap.util.ColorUtils;
@@ -14,7 +15,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.RasterFormatException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import javax.imageio.ImageIO;
 import net.minecraft.ResourceLocationException;
-import net.minecraft.client.Options;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.block.BlockModelShaper;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
@@ -79,7 +78,7 @@ public class ColorManager {
     private int[] blockColors = new int[16384];
     private int[] blockColorsWithDefaultTint = new int[16384];
     private final HashSet<Integer> biomeTintsAvailable = new HashSet<>();
-    private boolean optifineInstalled;
+    private final boolean optifineInstalled = false;
     private final HashMap<Integer, int[][]> blockTintTables = new HashMap<>();
     private final HashSet<Integer> biomeTextureAvailable = new HashSet<>();
     private final HashMap<String, Integer> blockBiomeSpecificColors = new HashMap<>();
@@ -99,19 +98,6 @@ public class ColorManager {
     private final ColorResolver redstoneColorResolver = (blockState, biomex, blockPos) -> RedStoneWireBlock.getColorForPower(blockState.getValue(RedStoneWireBlock.POWER));
 
     public ColorManager() {
-        this.optifineInstalled = false;
-        Field ofProfiler = null;
-
-        try {
-            ofProfiler = Options.class.getDeclaredField("ofProfiler");
-        } catch (SecurityException | NoSuchFieldException ignored) {
-        } finally {
-            if (ofProfiler != null) {
-                this.optifineInstalled = true;
-            }
-
-        }
-
         ++this.sizeOfBiomeArray;
     }
 
@@ -542,7 +528,7 @@ public class ColorManager {
                     ClientLevel clientWorld = VoxelConstants.getClientWorld();
 
                     ChunkAccess chunk = clientWorld.getChunk(blockPos);
-                    if (chunk != null && !((LevelChunk) chunk).isEmpty() && clientWorld.hasChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4)) {
+                    if (!((LevelChunk) chunk).isEmpty() && clientWorld.hasChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4)) {
                         tint = VoxelConstants.getMinecraft().getBlockColors().getColor(blockState, clientWorld, blockPos, 1) | 0xFF000000;
                     } else {
                         tint = this.tintFromFakePlacedBlock(blockState, tempBlockPos, null); // Biome 4?
@@ -568,7 +554,8 @@ public class ColorManager {
 
     public int getBiomeTint(AbstractMapData mapData, Level world, BlockState blockState, int blockStateID, MutableBlockPos blockPos, MutableBlockPos loopBlockPos, int startX, int startZ) {
         ChunkAccess chunk = world.getChunk(blockPos);
-        boolean live = chunk != null && !((LevelChunk) chunk).isEmpty() && VoxelConstants.getPlayer().level().hasChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4);
+        boolean live = !((LevelChunk) chunk).isEmpty() && VoxelConstants.getPlayer().level()
+                .hasChunk(blockPos.getX() >> 4, blockPos.getZ() >> 4);
         live = live && VoxelConstants.getPlayer().level().hasChunkAt(blockPos);
         int tint = -2;
         if (this.optifineInstalled || !live && this.biomeTintsAvailable.contains(blockStateID)) {
@@ -737,11 +724,9 @@ public class ColorManager {
 
         try {
             InputStream input = VoxelConstants.getMinecraft().getResourceManager().getResource(propertiesFile).get().open();
-            if (input != null) {
-                properties.load(input);
-                input.close();
-                this.renderPassThreeBlendMode = properties.getProperty("blend.3", "alpha");
-            }
+            properties.load(input);
+            input.close();
+            this.renderPassThreeBlendMode = properties.getProperty("blend.3", "alpha");
         } catch (IOException var9) {
             this.renderPassThreeBlendMode = "alpha";
         }
@@ -775,10 +760,8 @@ public class ColorManager {
 
             try {
                 InputStream input = VoxelConstants.getMinecraft().getResourceManager().getResource(propertiesFile).get().open();
-                if (input != null) {
-                    properties.load(input);
-                    input.close();
-                }
+                properties.load(input);
+                input.close();
             } catch (IOException var39) {
                 return;
             }
@@ -1071,7 +1054,7 @@ public class ColorManager {
 
     private int parseBiomeName(String name) {
         Biome biome = this.world.registryAccess().lookupOrThrow(Registries.BIOME).get(ResourceLocation.parse(name)).get().value();
-        return biome != null ? this.world.registryAccess().lookupOrThrow(Registries.BIOME).getId(biome) : -1;
+        return this.world.registryAccess().lookupOrThrow(Registries.BIOME).getId(biome);
     }
 
     private List<ResourceLocation> findResources(String namespace, String startingPath, String suffixMaybeNull, boolean recursive, boolean directories, boolean sortByFilename) {
@@ -1108,10 +1091,8 @@ public class ColorManager {
 
         try {
             InputStream input = VoxelConstants.getMinecraft().getResourceManager().getResource(ResourceLocation.parse("optifine/color.properties")).get().open();
-            if (input != null) {
-                properties.load(input);
-                input.close();
-            }
+            properties.load(input);
+            input.close();
         } catch (IOException exception) {
             VoxelConstants.getLogger().error(exception);
         }
@@ -1149,10 +1130,8 @@ public class ColorManager {
 
             try {
                 InputStream input = VoxelConstants.getMinecraft().getResourceManager().getResource(resource).get().open();
-                if (input != null) {
-                    colorProperties.load(input);
-                    input.close();
-                }
+                colorProperties.load(input);
+                input.close();
             } catch (IOException var21) {
                 break;
             }
@@ -1210,10 +1189,8 @@ public class ColorManager {
 
         try {
             InputStream input = VoxelConstants.getMinecraft().getResourceManager().getResource(resourceProperties).get().open();
-            if (input != null) {
-                colorProperties.load(input);
-                input.close();
-            }
+            colorProperties.load(input);
+            input.close();
 
             String format = colorProperties.getProperty("format");
             if (format != null) {
@@ -1265,7 +1242,7 @@ public class ColorManager {
                         tintMult = tintColorsBuff.getRGB(t, Math.max(0, s * heightMultiplier - yOffset)) & 16777215;
                     } else {
                         double var1 = Mth.clamp(biome.getBaseTemperature(), 0.0F, 1.0F);
-                        double var2 = Mth.clamp(biome.climateSettings.downfall(), 0.0F, 1.0F);
+                        double var2 = Mth.clamp(((BiomeAccessor) (Object) biome).getClimateSettings().downfall(), 0.0F, 1.0F);
 
                         var2 *= var1;
                         var1 = 1.0 - var1;

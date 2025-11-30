@@ -7,6 +7,7 @@ val MINECRAFT_VERSION by extra { "25w14craftmine" }
 //val NEOFORGE_VERSION by extra { "21.4.6-beta" }
 val FABRIC_LOADER_VERSION by extra { "0.16.12" }
 val FABRIC_API_VERSION by extra { "0.119.8+25w14craftmine" }
+val IRIS_VERSION by extra { "1.8.11" }
 
 val MOD_VERSION by extra { "$MINECRAFT_VERSION-1.15.3+xiami.3" }
 

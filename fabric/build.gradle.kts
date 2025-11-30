@@ -33,8 +33,7 @@ tasks.named("test").configure {
 }
 
 loom {
-    if (project(":common").file("src/main/resources/voxelmap.accesswidener").exists())
-        accessWidenerPath.set(project(":common").file("src/main/resources/voxelmap.accesswidener"))
+    accessWidenerPath.set(project(":common").file("src/main/resources/voxelmap.accesswidener"))
 
     @Suppress("UnstableApiUsage")
     mixin {
