@@ -8,7 +8,7 @@ val MINECRAFT_VERSION by extra { "25w14craftmine" }
 val FABRIC_LOADER_VERSION by extra { "0.16.12" }
 val FABRIC_API_VERSION by extra { "0.119.8+25w14craftmine" }
 
-val MOD_VERSION by extra { "$MINECRAFT_VERSION-1.15.0+xiami.2" }
+val MOD_VERSION by extra { "$MINECRAFT_VERSION-1.15.3+xiami.3" }
 
 allprojects {
     apply(plugin = "java")
